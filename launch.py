@@ -5,7 +5,9 @@ import sys
 import time
 from novaclient.v1_1 import client
 
-def launch(auth_url, tenant='admin', user='admin', password='secrete'):
+def launch(auth_url, tenant='admin', user='admin', password='secrete', 
+           destroy_time=60):
+
     nc = client.Client(user, password, tenant, auth_url)
     name = "test-%d-%d" % (time.time(), random.randint(0, 99999999))
 
@@ -36,11 +38,13 @@ def launch(auth_url, tenant='admin', user='admin', password='secrete'):
 
     nc.servers.delete(server_id)
 
-    time.sleep(10)
+    start = time.time()
+    while time.time() - start < destroy_time:
+        if not any([s.id == server_id for s in nc.servers.list()]):
+            return
+        time.sleep(1)
 
-    for s in nc.servers.list():
-        if s.id == server_id:
-            assert None, "Server wasn't deleted %s" % server_id
+    assert None, "Server %s wasn't deleted within %d seconds" % (name, destroy_time)
 
 
 if __name__ == '__main__':
