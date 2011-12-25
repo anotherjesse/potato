@@ -54,22 +54,22 @@ if __name__ == '__main__':
     except:
         print "unable to import defaults"
 
-    if len(sys.argv) >= 1:
+    if len(sys.argv) >= 2:
         auth_url = "http://%s:5000/v2.0/" % sys.argv[1]
     else:
         auth_url = "http://%s:5000/v2.0/" % config.master
 
-    if len(sys.argv) >= 2:
+    if len(sys.argv) >= 3:
         tenant = sys.argv[2]
     else:
         tenant = 'jesse'
 
-    if len(sys.argv) >= 3:
+    if len(sys.argv) >= 4:
         user = sys.argv[3]
     else:
         user = 'jesse'
 
-    if len(sys.argv) >= 4:
+    if len(sys.argv) >= 5:
         password = sys.argv[4]
     else:
         password = config.users[user]
