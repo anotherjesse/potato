@@ -16,17 +16,17 @@ def launch(auth_url, tenant, user, password, destroy_time=60):
         for i in nc.images.list():
             if i.name == image_name:
                 return i
-        assert None, "Couldn't find image %s" % image_name
 
     def get_flavor(max_cores):
         flavors = [f for f in nc.flavors.list() if f.vcpus <= max_cores]
-        assert len(flavors) > 0, "No flavors"
         return random.choice(flavors)
 
     image = get_image('oneiric-server-cloudimg-amd64')
+    assert image, "No image found"
     print image
 
     flavor = get_flavor(4)
+    assert flavor, "No satisfying flavor"
     print flavor
 
     new_server = nc.servers.create(image=image, flavor=flavor, name=name)
