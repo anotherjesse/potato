@@ -29,10 +29,12 @@ def launch(auth_url, tenant, user, password, destroy_time=60):
     assert flavor, "No satisfying flavor"
     print flavor
 
-    new_server = nc.servers.create(image=image, flavor=flavor, name=name)
-    server_id = new_server.id
-
+    new_server = nc.servers.create(image=image,
+                                   flavor=flavor,
+                                   name=name)
     print new_server
+
+    server_id = new_server.id
 
     while nc.servers.get(server_id).status != 'ACTIVE':
         time.sleep(2)
@@ -45,7 +47,7 @@ def launch(auth_url, tenant, user, password, destroy_time=60):
             return
         time.sleep(1)
 
-    assert None, "Server %s wasn't deleted within %d seconds" % (name, destroy_time)
+    assert None, "Server %s not deleted within %d sec" % (name, destroy_time)
 
 
 if __name__ == '__main__':
