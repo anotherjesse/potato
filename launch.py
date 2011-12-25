@@ -5,8 +5,9 @@ import sys
 import time
 from novaclient.v1_1 import client
 
-def launch(auth_url, tenant='admin', user='admin', password='secrete', 
-           destroy_time=60):
+
+def launch(auth_url, tenant, user, password, destroy_time=60):
+    """launch and terminate a VM within a specified time"""
 
     nc = client.Client(user, password, tenant, auth_url)
     name = "test-%d-%d" % (time.time(), random.randint(0, 99999999))
@@ -21,7 +22,7 @@ def launch(auth_url, tenant='admin', user='admin', password='secrete',
         flavors = [f for f in nc.flavors.list() if f.vcpus <= max_cores]
         assert len(flavors) > 0, "No flavors"
         return random.choice(flavors)
-    
+
     image = get_image('oneiric-server-cloudimg-amd64')
     print image
 
@@ -48,14 +49,30 @@ def launch(auth_url, tenant='admin', user='admin', password='secrete',
 
 
 if __name__ == '__main__':
-    auth_url = "http://%s:5000/v2.0/" % sys.argv[1]
-    tenant = user = password = None
+    try:
+        import config
+    except:
+        print "unable to import defaults"
+
+    if len(sys.argv) >= 1:
+        auth_url = "http://%s:5000/v2.0/" % sys.argv[1]
+    else:
+        auth_url = "http://%s:5000/v2.0/" % config.master
+
     if len(sys.argv) >= 2:
         tenant = sys.argv[2]
+    else:
+        tenant = 'jesse'
+
     if len(sys.argv) >= 3:
         user = sys.argv[3]
+    else:
+        user = 'jesse'
+
     if len(sys.argv) >= 4:
         password = sys.argv[4]
+    else:
+        password = config.users[user]
 
     launch(auth_url, tenant, user, password)
     print "success"
