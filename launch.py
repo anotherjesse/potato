@@ -3,6 +3,7 @@
 import random
 import sys
 import time
+import re
 from novaclient.v1_1 import client
 
 
