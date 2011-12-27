@@ -6,7 +6,7 @@ import time
 from novaclient.v1_1 import client
 
 
-def launch(auth_url, tenant, user, password, destroy_time=60):
+def launch(auth_url, tenant, user, password, destroy_time=60, boot_time=60):
     """launch and terminate a VM within a specified time"""
 
     nc = client.Client(user, password, tenant, auth_url)
@@ -38,6 +38,14 @@ def launch(auth_url, tenant, user, password, destroy_time=60):
 
     while nc.servers.get(server_id).status != 'ACTIVE':
         time.sleep(2)
+    
+    booted = False
+    boot_start = time.time()
+    while not booted and time.time() - boot_start < boot_time:
+        booted = re.search("cloud-init boot finished",nc.servers._action('os-getConsoleOutput',nc.servers.get(server_id), {'length':None})[1]['output'])
+        time.sleep(2)
+    if not booted:
+        assert None, "Server %s not booted within %d sec" % (name, boot_time)
 
     nc.servers.delete(server_id)
 
