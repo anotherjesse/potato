@@ -38,21 +38,20 @@ def launch(auth_url, tenant, user, password, destroy_time=60, boot_time=60):
 
     while nc.servers.get(server_id).status != 'ACTIVE':
         time.sleep(2)
-    
+
     booted = False
     boot_start = time.time()
     successMsgs = ['cloud-init boot finished']
-    
+
     while not booted and time.time() - boot_start < boot_time:
         console_output = nc.servers.get_console_output(server_id)[1]['output']
-        
         for successMsg in successMsgs:
                 if successMsg in console_output:
                     booted = True
         time.sleep(3)
     assert booted, "Server %s not booted within %d sec" % (name, boot_time)
     print "booted"
-    
+
     nc.servers.delete(server_id)
 
     start = time.time()
