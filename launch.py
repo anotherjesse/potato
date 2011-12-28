@@ -3,7 +3,6 @@
 import random
 import sys
 import time
-import re
 from novaclient.v1_1 import client
 
 
@@ -46,12 +45,10 @@ def launch(auth_url, tenant, user, password, destroy_time=60, boot_time=60):
     
     while not booted and time.time() - boot_start < boot_time:
         console_output = nc.servers._action('os-getConsoleOutput',nc.servers.get(server_id), {'length':None})[1]['output']
-        for successMsg in successMsgs:
-            if re.search(successMsg,console_output):
-                booted = True
+        for successMsg in console_output:
+            booted = True
         time.sleep(2)
-    if not booted:
-        assert None, "Server %s not booted within %d sec" % (name, boot_time)
+    assert booted, "Server %s not booted within %d sec" % (name, boot_time)
 
     nc.servers.delete(server_id)
 
